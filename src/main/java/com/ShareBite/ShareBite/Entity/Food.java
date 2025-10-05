@@ -24,11 +24,14 @@ public class Food {
     private double price;
     private String description;
     private String category;
-    private String phoneNumber;
-    private String email;
     private String imageUrl;
-    private Date postedBy = new Date();
-    private Date expiryDate;
+    private Date postedOn = new Date();
+    private Date bestBefore=new Date();
+    private boolean isAvailable=true;
+    private boolean isSold=false;
+    private String postedBy;
+    private String phoneNumber;
+    private String address;
     private String latitude;
     private String longitude;
 }

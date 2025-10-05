@@ -6,9 +6,12 @@ import com.ShareBite.ShareBite.repositeries.FoodRepository;
 import com.ShareBite.ShareBite.repositeries.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.Authentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Date;
 import java.util.List;
@@ -26,6 +29,9 @@ public class UserServices {
     public void saveNewUser(User user){
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setRoles(List.of("USER"));
+        if (user.getUserType() == null || user.getUserType().isEmpty()) {
+            user.setUserType("Individual");
+        }
         userRepository.save(user);
     }
 
@@ -40,20 +46,28 @@ public class UserServices {
 
     public ResponseEntity<?> addFood(Food food) {
         try {
-            // set the posted date/time automatically
+            Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
+            String username = authentication.getName();
+            User user = userRepository.findByUsername(username);
             Date now = new Date();
-            food.setPostedBy(now);
+            food.setPostedOn(now);
 
-            if (food.getExpiryDate() == null) {
+            if (food.getBestBefore() == null) {
                 // 6 hours in milliseconds = 6 * 60 * 60 * 1000
                 long sixHoursLater = now.getTime() + (6 * 60 * 60 * 1000);
-                food.setExpiryDate(new Date(sixHoursLater));
+                food.setBestBefore(new Date(sixHoursLater));
             }
-
+            if (user != null) {
+                food.setPostedBy(user.getUsername());
+            } else {
+                food.setPostedBy(username); // fallback if user not found
+            }
             // save to MongoDB
-            foodRepository.save(food);
+            Food added=foodRepository.save(food);
+            user.getSales().add(added);
+            userRepository.save(user);
 
-            return ResponseEntity.ok("Food item added successfully!");
+            return ResponseEntity.ok("Food item added successfully by " + food.getPostedBy() + "!");
         } catch (Exception e) {
             return ResponseEntity.internalServerError()
                     .body("Error adding food: " + e.getMessage());

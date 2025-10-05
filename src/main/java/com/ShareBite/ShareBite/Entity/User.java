@@ -11,7 +11,6 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 @Document(collection = "users")
@@ -34,16 +33,14 @@ public class User {
 
     private String email;
 
-//    private Date dateOfBirth;
+    private List<String> roles;  //Admin , User
 
-    private List<String> roles;
+    private String userType; // Individual, Restaurant, NGO
 
-    //location
-
-    @DBRef
-    private List<Buy> buy=new ArrayList<>();
+//    @DBRef
+//    private List<Food> buy=new ArrayList<>();
 
     @DBRef
-    private List<Sell> sales=new ArrayList<>();
+    private List<Food> sales=new ArrayList<>();
 
 }
