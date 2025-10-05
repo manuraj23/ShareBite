@@ -34,9 +34,11 @@ public class User {
 
     private String email;
 
-    private Date dateOfBirth;
+//    private Date dateOfBirth;
 
     private List<String> roles;
+
+    //location
 
     @DBRef
     private List<Buy> buy=new ArrayList<>();

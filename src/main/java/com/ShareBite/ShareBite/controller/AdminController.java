@@ -14,8 +14,14 @@ import java.util.List;
 @RestController
 @RequestMapping("/admin")
 public class AdminController {
+
     @Autowired
     private AdminService adminService;
+
+    @GetMapping("/healthCheck")
+    public ResponseEntity<String> healthCheck() {
+        return new ResponseEntity<>("I am alive! from Admin Controller", HttpStatus.OK);
+    }
 
     @GetMapping("/all-users")
     public ResponseEntity<?> getAllUser(){
@@ -25,4 +31,6 @@ public class AdminController {
         }
         return new ResponseEntity<>(HttpStatus.NOT_FOUND);
     }
+
+
 }
